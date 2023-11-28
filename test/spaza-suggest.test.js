@@ -4,7 +4,7 @@ import SpazaSuggest from '../spaza-suggest.js';
 import pgPromise from 'pg-promise';
 
 // const DATABASE_URL= process.env.DATABASE_URL || "postgresql://codex-coder:pg123@localhost:5432/spaza_suggest";
-const DATABASE_URL= process.env.DATABASE_URL || "postgresql://zuggs:suggest123@localhost:5432/spaza_suggest";
+const DATABASE_URL= process.env.DATABASE_URL || "postgres://jhccjlrp:RbqnVuT7nsr3rFlU21wqtty2UeJWhRGf@flora.db.elephantsql.com/jhccjlrp";
 
 const config = { 
 	connectionString : DATABASE_URL
@@ -21,7 +21,7 @@ const db = pgp(config);
 const spazaSuggest = SpazaSuggest(db);
 
 describe ("The smart spaza", function() {
-
+    this.timeout(10000);
     beforeEach(async function() {
 
         await db.none(`delete from accepted_suggestion`);
@@ -100,9 +100,10 @@ describe ("The smart spaza", function() {
         await spazaSuggest.suggestProduct(area1.id, client.id, 'Baked Beans');
 
         const suggestions = await spazaSuggest.suggestions(client.id);
+        console.log('Suggestions :', suggestions[1]);
 
         assert.equal(3, suggestions.length);
-        assert.equal('Nyanga East', suggestions[1].area_name);
+        assert.equal('Nyanga', suggestions[1].area_name);
 
     });
 

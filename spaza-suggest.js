@@ -7,10 +7,19 @@ export default function SpazaSuggest (db){
     //// returns client code
     async function registerClient(username){
         // get the code
-
-        const uniqCode = uid();
-        await db.none(`insert into spaza_client (username, code) values ($1, $2)`, [username, uniqCode])
-        return uniqCode;
+        
+        //Prevent duplicates
+        let count  = await db.one(`select count(*) from spaza_client where username=$1`, [username]);
+        if(count.count > 0){
+            //Duplicate
+            let alreadyExistingCode = await db.one(`select code from spaza_client where username=$1`, [username]);
+            return `Here's your existing login code : ${alreadyExistingCode.code}`;
+        } else {
+            const uniqCode = uid();
+            await db.none(`insert into spaza_client (username, code) values ($1, $2)`, [username, uniqCode])
+            return uniqCode;
+            
+        }
 
     }
 
